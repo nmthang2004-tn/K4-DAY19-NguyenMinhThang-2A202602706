@@ -51,7 +51,7 @@ Provider chính và rẻ nhất cho baseline là **OpenAI**. OpenRouter, Gemini 
 | --- | --- | --- | --- |
 | **OpenAI (chính)** | `OPENAI_API_KEY` | `gpt-4o-mini` | OpenAI `text-embedding-3-small` |
 | OpenRouter | `OPENROUTER_API_KEY` | `openai/gpt-4o-mini` | OpenRouter `openai/text-embedding-3-small` |
-| Gemini | `GEMINI_API_KEY` | `gemini-2.5-flash-lite` | Gemini `gemini-embedding-001` |
+| Gemini | `GEMINI_API_KEY` | `gemini-3.5-flash-lite` | Gemini `gemini-embedding-001` |
 | Anthropic | `ANTHROPIC_API_KEY` | `claude-opus-5-5` | **Không có embedding API**: phải thêm key OpenAI/OpenRouter/Gemini |
 
 Nếu có nhiều key, tự động ưu tiên: **OpenAI → OpenRouter → Gemini → Anthropic**. Muốn ép provider:

@@ -2,5 +2,6 @@
 pytest==9.1.1
 python-dotenv==1.2.2
 neo4j==6.2.0
+truststore==0.10.4  # use the OS CA store for API TLS (important on managed Windows machines)
 openai==2.46.0      # OpenAI, OpenRouter and Gemini (OpenAI-compatible endpoints)
 anthropic==1.11.0   # only needed when LLM_PROVIDER=anthropic

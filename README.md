@@ -116,3 +116,91 @@ Phần base (chunking, vector store, agent RAG) **đã có sẵn và chạy đư
 - **Tin tức:** lấy từ tuoitre.vn; robots.txt cho phép; chỉ dùng cho mục đích học tập.
 - URL và ngày lấy của từng file nằm trong `sources.csv`.
 - Nội dung là văn bản pháp luật và tin tức công khai, dùng cho mục đích kỹ thuật. Câu trả lời của hệ thống **không phải tư vấn pháp lý**.
+
+# Knowledge Graph Schema
+
+Sơ đồ dưới đây mô tả Knowledge Graph kết hợp hai nguồn dữ liệu:
+
+- **Dữ liệu Tin tức**: được trích xuất bằng LLM.
+- **Dữ liệu Luật**: được trích xuất bằng Regex.
+- Hai nguồn được liên kết thông qua các node dùng chung là **Crime** và **Substance**.
+
+```mermaid
+flowchart TD
+
+    %% =========================
+    %% NEWS DATA
+    %% =========================
+    subgraph News["Dữ liệu Tin tức (LLM Extraction)"]
+
+        P["Person"]
+
+        V["Verdict
+        - years: int
+        - is_life: bool
+        - is_death: bool"]
+
+        C["Case
+        - case_id
+        - date
+        - court"]
+
+        L["Location
+        - province"]
+
+        P -->|RECEIVED| V
+        P -->|DEFENDANT_IN| C
+        P -->|CHARGED_WITH| CR
+        C -->|"SEIZED<br/>amount, amount_grams"| S
+        C -->|OCCURRED_IN| L
+    end
+
+
+    %% =========================
+    %% SHARED ENTITIES
+    %% =========================
+
+    CR(("Crime"))
+    S(("Substance"))
+
+    C -->|"CHARGED_WITH<br/>fallback"| CR
+
+
+    %% =========================
+    %% LAW DATA
+    %% =========================
+    subgraph Law["Dữ liệu Luật (Regex Extraction)"]
+
+        A["Article
+        - article_number
+        - title"]
+
+        CL["Clause
+        - clause_number
+        - content"]
+
+        PR["PenaltyRange
+        - min_years
+        - max_years
+        - life_allowed
+        - death_allowed"]
+
+        A -->|HAS_CLAUSE| CL
+        CL -->|DEFINES_PENALTY| PR
+        CL -->|THRESHOLDS_FOR| S
+    end
+
+
+    %% =========================
+    %% LAW → CRIME CONNECTION
+    %% =========================
+
+    A -->|DEFINES| CR
+
+
+    %% =========================
+    %% STYLE
+    %% =========================
+
+    style CR fill:#f9d71c,stroke:#333,stroke-width:2px,color:#000
+    style S fill:#5bc0de,stroke:#333,stroke-width:2px,color:#000

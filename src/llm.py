@@ -17,13 +17,22 @@ import time
 from dataclasses import dataclass, fields
 from typing import Any
 
+# httpx/certifi cannot see enterprise or locally managed roots on some Windows setups.
+# truststore keeps TLS verification enabled while delegating trust decisions to the OS store.
+try:
+    import truststore
+
+    truststore.inject_into_ssl()
+except ImportError:  # `pytest` can still run when only the offline dependencies are installed.
+    pass
+
 PROVIDERS = {
     "openai": {"key": "OPENAI_API_KEY", "base_url": None,
                "chat": "gpt-4o-mini", "embed": "text-embedding-3-small"},
     "openrouter": {"key": "OPENROUTER_API_KEY", "base_url": "https://openrouter.ai/api/v1",
                    "chat": "openai/gpt-4o-mini", "embed": "openai/text-embedding-3-small"},
     "gemini": {"key": "GEMINI_API_KEY", "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
-               "chat": "gemini-2.5-flash-lite", "embed": "gemini-embedding-001"},
+               "chat": "gemini-3.5-flash-lite", "embed": "gemini-embedding-001"},
     "anthropic": {"key": "ANTHROPIC_API_KEY", "base_url": None,
                   "chat": "claude-opus-5-5", "embed": None},
 }
@@ -36,7 +45,7 @@ PRICES_PER_M = {
     "gpt-4.1-nano": (0.10, 0.40),
     "text-embedding-3-small": (0.02, 0.0),
     "text-embedding-3-large": (0.13, 0.0),
-    "gemini-2.5-flash-lite": (0.10, 0.40),
+    "gemini-3.5-flash-lite": (0.30, 2.50),
     # Gemini embedding pricing intentionally omitted: the current pricing page does not list gemini-embedding-001.
     "claude-opus-5-5": (4.00, 20.00),
     "claude-sonnet-5-5": (2.00, 10.00),
